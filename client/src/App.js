@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import EnerygTradingContract from "./contracts/EnergyTrading.json";
 import getWeb3 from "./getWeb3";
-// import RunningTradesList from "./components/RunningTradesList";
+
 
 import Layout from "./Layout";
 import NoPage from "./pages/NoPage";
@@ -33,408 +35,16 @@ class App extends Component {
     try {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
-      const CONTRACT_ADDRESS = '0xC38C88A1701908b4D5cb454466f0Ea068Bc6C267';
-      const CONTRACT_ABI = [
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "bool",
-              "name": "_isSuccessfulTrade",
-              "type": "bool"
-            }
-          ],
-          "name": "adminResolveConflict",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_price",
-              "type": "uint256"
-            }
-          ],
-          "name": "bid",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "buyerClaimMoneyBack",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "buyerConfirmSuccessfulTrade",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "buyerMarkFailedTrade",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "cancelTrade",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_amountEnergyNeeded",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "_numOfMins",
-              "type": "uint256"
-            }
-          ],
-          "name": "createTrade",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "endBidding",
-          "outputs": [],
-          "stateMutability": "payable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "sellerClaimMoney",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "sellerConfirmFailedTrade",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "_id",
-              "type": "uint256"
-            }
-          ],
-          "name": "sellerMarkConflict",
-          "outputs": [],
-          "stateMutability": "nonpayable",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "stateMutability": "nonpayable",
-          "type": "constructor"
-        },
-        {
-          "anonymous": false,
-          "inputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "id",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "buyer",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "buyerDeposit",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "amountEnergyNeeded",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "numOfMins",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "timeBiddingEnded",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "sellingPrice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "seller",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "sellerDeposit",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "enum Status",
-                  "name": "status",
-                  "type": "uint8"
-                }
-              ],
-              "indexed": false,
-              "internalType": "struct Trade",
-              "name": "trade",
-              "type": "tuple"
-            }
-          ],
-          "name": "TradeClosed",
-          "type": "event"
-        },
-        {
-          "inputs": [],
-          "name": "admin",
-          "outputs": [
-            {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "currentNumOfAllTrades",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "getRunningTrades",
-          "outputs": [
-            {
-              "components": [
-                {
-                  "internalType": "uint256",
-                  "name": "id",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "buyer",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "buyerDeposit",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "amountEnergyNeeded",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "numOfMins",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "timeBiddingEnded",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "sellingPrice",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "address",
-                  "name": "seller",
-                  "type": "address"
-                },
-                {
-                  "internalType": "uint256",
-                  "name": "sellerDeposit",
-                  "type": "uint256"
-                },
-                {
-                  "internalType": "enum Status",
-                  "name": "status",
-                  "type": "uint8"
-                }
-              ],
-              "internalType": "struct Trade[]",
-              "name": "",
-              "type": "tuple[]"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "name": "openedTrades",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "buyer",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "buyerDeposit",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "amountEnergyNeeded",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "numOfMins",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "timeBiddingEnded",
-              "type": "uint256"
-            },
-            {
-              "internalType": "uint256",
-              "name": "sellingPrice",
-              "type": "uint256"
-            },
-            {
-              "internalType": "address",
-              "name": "seller",
-              "type": "address"
-            },
-            {
-              "internalType": "uint256",
-              "name": "sellerDeposit",
-              "type": "uint256"
-            },
-            {
-              "internalType": "enum Status",
-              "name": "status",
-              "type": "uint8"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        },
-        {
-          "inputs": [],
-          "name": "showContractBalance",
-          "outputs": [
-            {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-            }
-          ],
-          "stateMutability": "view",
-          "type": "function"
-        }
-      ];
-      const instance = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
 
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      // Get the contract instance.
+      const networkId = await web3.eth.net.getId();
+      const deployedNetwork = EnerygTradingContract.networks[networkId];
+      const instance = new web3.eth.Contract(
+        EnerygTradingContract.abi,
+        deployedNetwork && deployedNetwork.address,
+      );
+
+      this.setState({ web3, accounts, contract: instance }, this.fetchAllOpenedTrades);
     } catch (error) {
       alert(
         `Failed to load web3, accounts, or contract. Check console for details.`,
@@ -443,11 +53,11 @@ class App extends Component {
     }
   };
 
-  runExample = async () => {
+  fetchAllOpenedTrades = async () => {
     const { accounts, contract } = this.state;
 
     const allRunningTrades = [], myOpenedTrades = [];
-    const allOpenedTrades = await contract.methods.getRunningTrades().call();
+    const allOpenedTrades = await contract.methods.fetchAllOpenedTrades().call();
 
     console.log(allOpenedTrades);
 
@@ -470,16 +80,23 @@ class App extends Component {
 
   createTrade = async (_amountEnergyNeeded, _numOfMins) => {
     const { accounts, contract } = this.state;
-    await contract.methods.createTrade(_amountEnergyNeeded).send({ from: accounts[0], value: 100000000000000000 })
+    await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
       .catch(err => {
         extractAndAlertErrorMessage(err)
       });
   }
 
-  /** ERROR: Cannot deal with big integers!! */
   bid = async (_id, _price) => {
     const { accounts, contract } = this.state;
     await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  withdrawBid = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.withdrawBid(_id).send({ from: accounts[0] })
       .catch(err => {
         extractAndAlertErrorMessage(err)
       });
@@ -495,10 +112,7 @@ class App extends Component {
 
   endBidding = async (trade) => {
     const { accounts, contract } = this.state;
-
-    console.log(`Selling price value = ${trade["sellingPrice"]}`)
-
-    await contract.methods.endBidding(trade["id"]).send({ from: accounts[0], value: trade["sellingPrice"] })
+    await contract.methods.endBidding(parseInt(trade["id"])).send({ from: accounts[0], value: parseInt(trade["sellingPrice"]) })
       .catch(err => {
         extractAndAlertErrorMessage(err)
       });
@@ -515,7 +129,7 @@ class App extends Component {
             {/* {this.state.openedTrades.length > 0 && <Route index element={<RunningTradesList openedTrades={this.state.openedTrades} />} />} */}
             <Route index element={<Container><Home allRunningTrades={this.state.allRunningTrades} submitBid={this.bid} /></Container>} />
             <Route path="create-trade" element={<Container><CreateTrade onSubmit={this.createTrade} /></Container>} />
-            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding]} /></Container>} />
+            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid]} /></Container>} />
             <Route path="*" element={<Container><NoPage /></Container>} />
           </Route>
         </Routes>

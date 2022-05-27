@@ -145,6 +145,54 @@ class App extends Component {
       });
   }
 
+  buyerMarkFailedTrade = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.buyerMarkFailedTrade(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  buyerConfirmSuccessfulTrade = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.buyerConfirmSuccessfulTrade(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  sellerClaimMoney = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.sellerClaimMoney(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  buyerClaimMoneyBack = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.buyerClaimMoneyBack(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  sellerConfirmFailedTrade = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.sellerConfirmFailedTrade(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
+  sellerMarkConflict = async (_id) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.sellerMarkConflict(_id).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
   endBidding = async (trade) => {
     const { accounts, contract } = this.state;
     await contract.methods.endBidding(parseInt(trade["id"])).send({ from: accounts[0], value: parseInt(trade["sellingPrice"]) })
@@ -206,7 +254,7 @@ class App extends Component {
             {/* {this.state.openedTrades.length > 0 && <Route index element={<RunningTradesList openedTrades={this.state.openedTrades} />} />} */}
             <Route index element={<Container><Home allRunningTrades={this.state.allRunningTrades} submitBid={this.bid} /></Container>} />
             <Route path="create-trade" element={<Container><CreateTrade onSubmit={this.createTrade} /></Container>} />
-            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid]} /></Container>} />
+            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict]} /></Container>} />
             <Route path="*" element={<Container><NoPage /></Container>} />
           </Route>
         </Routes>

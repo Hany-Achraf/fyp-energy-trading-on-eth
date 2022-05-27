@@ -44,7 +44,7 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
         </div>
         <div className='col-5 text-end'>
           {
-            address === trade["buyer"] 
+            address.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
                 <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {handleCancel(e)}}>Cancel</Button>

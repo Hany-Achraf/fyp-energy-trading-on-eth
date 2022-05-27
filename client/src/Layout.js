@@ -2,10 +2,10 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import CustomNavbar from "./components/CustomNavbar";
 
-const Layout = () => {
+const Layout = ({ isAdmin }) => {
   return (
     <>
-      <CustomNavbar />
+      <CustomNavbar isAdmin={isAdmin} />
       <Outlet />
     </>
   )

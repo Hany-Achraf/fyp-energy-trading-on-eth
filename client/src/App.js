@@ -12,7 +12,11 @@ import "./App.css";
 import Home from "./pages/Home";
 import CreateTrade from "./pages/CreateTrade";
 import MyOpenedTrades from "./pages/MyOpenedTrades";
-import { Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
+
+import { ImSad2 } from "react-icons/im";
+
+import { ReactSession }  from 'react-client-session';
 
 const extractAndAlertErrorMessage = (err) => {
   if (err["code"] === 4001) return
@@ -29,12 +33,20 @@ const extractAndAlertErrorMessage = (err) => {
 }
 
 class App extends Component {
-  state = { allRunningTrades: [], myOpenedTrades: [], web3: null, accounts: null, contract: null };
+  state = { allRunningTrades: [], myOpenedTrades: [], 
+            web3: null, accounts: null, contract: null, 
+            isLoading: true, isLoggedIn: false, isAdmin: false 
+          };
 
   componentDidMount = async () => {
     try {
       const web3 = await getWeb3();
       const accounts = await web3.eth.getAccounts();
+
+      window.ethereum.on('accountsChanged', function (accounts) {
+        ReactSession.set("storedAccount", null);
+        this.setState({isAdmin: false, isLoggedIn: false, accounts: accounts})
+      }.bind(this))
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
@@ -44,14 +56,38 @@ class App extends Component {
         deployedNetwork && deployedNetwork.address,
       );
 
-      this.setState({ web3, accounts, contract: instance }, this.fetchAllOpenedTrades);
+      this.setState({ web3, accounts, contract: instance });
+
+      const storedAccount = ReactSession.get("storedAccount");
+      if (storedAccount !== null && storedAccount === accounts[0].toUpperCase()) {
+        this.fetchAllOpenedTrades();
+        this.setState({isLoggedIn: true})
+        const adminAddress = await instance.methods.admin().call();
+        if (adminAddress.toUpperCase() === storedAccount) {
+          this.setState({isAdmin: true});
+        }
+      }
+
     } catch (error) {
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
       console.error(error);
     }
+    this.setState({isLoading: false});
   };
+
+  login = async (e) => {
+    e.preventDefault();
+    if (this.state.accounts !== null) {
+      this.fetchAllOpenedTrades()
+      ReactSession.set("storedAccount", (this.state.accounts[0]).toUpperCase());
+      this.setState({isLoggedIn: true});
+      const adminAddress = await this.state.contract.methods.admin().call();
+      if (adminAddress.toUpperCase() === (this.state.accounts[0]).toUpperCase()) {
+        this.setState({isAdmin: true});
+      }
+    } else {
+      alert("You must connect your MetaMask account first!!");
+    }
+  }
 
   fetchAllOpenedTrades = async () => {
     const { accounts, contract } = this.state;
@@ -59,14 +95,13 @@ class App extends Component {
     const allRunningTrades = [], myOpenedTrades = [];
     const allOpenedTrades = await contract.methods.fetchAllOpenedTrades().call();
 
-    console.log(allOpenedTrades);
-
     allOpenedTrades.forEach(openedTrade => {
       if (openedTrade["status"] === "0")  {
         allRunningTrades.push(openedTrade);
       }
       
-      if (openedTrade["buyer"] === accounts[0] || openedTrade["seller"] === accounts[0]) {
+      if (openedTrade["buyer"].toUpperCase() === accounts[0].toUpperCase() ||
+          openedTrade["seller"].toUpperCase() === accounts[0].toUpperCase()) {
         myOpenedTrades.push(openedTrade);
       }
     });
@@ -119,13 +154,55 @@ class App extends Component {
   }
 
   render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+    if (this.state.isLoading) {
+      return (
+        <div className="container-fluid h-100">
+          <div className="row h-100">
+            <div className="text-center my-auto">
+              <img src={require("./assets/images/load.png")} width={250} height={250} />
+              <br/>
+              <p className="lead">Loading Web3, accounts, and contract...</p>
+            </div>
+          </div>
+        </div>
+      );
     }
+
+    if (!this.state.web3) {
+      return (
+        <div className="container-fluid h-100">
+          <div className="row h-100">
+            <div className="text-center my-auto">
+              <p className="lead">Sorry, your browser is NOT supporting <b>Web3</b></p>
+              <h1><ImSad2 /></h1>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (!this.state.isLoggedIn) {
+      return (
+        <div className="container-fluid h-100">
+          <div className="row h-100">
+            <div className="text-center my-auto">
+              <div className="alert alert-dark mx-auto w-75" role="alert">
+                <p className="lead">Please make sure to connect your desired account on the correct network using MetaMask first!</p>
+              </div>
+              <Button variant="dark" size="lg" className="text-light justify-content-center" onClick={(e) => this.login(e)}>
+                <p className="lead d-inline">Login using MetaMask </p>
+                <img src={require("./assets/images/metamask.png")} width={40} height={40} />
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Layout isAdmin={this.state.isAdmin} />}>
             {/* {this.state.openedTrades.length > 0 && <Route index element={<RunningTradesList openedTrades={this.state.openedTrades} />} />} */}
             <Route index element={<Container><Home allRunningTrades={this.state.allRunningTrades} submitBid={this.bid} /></Container>} />
             <Route path="create-trade" element={<Container><CreateTrade onSubmit={this.createTrade} /></Container>} />

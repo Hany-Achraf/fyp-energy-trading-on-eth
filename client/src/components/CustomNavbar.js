@@ -16,7 +16,7 @@ import { GiElectric } from "react-icons/gi"
 <Link to="/view-all-closed-trades">View All Closed Trades</Link>
 </li> */}
 
-const CustomNavbar = () => {
+const CustomNavbar = ({ isAdmin }) => {
     const [active, setActive] = useState('/');
   return (
     <Navbar bg="light" expand="lg">
@@ -37,6 +37,12 @@ const CustomNavbar = () => {
             <NavItem>
                   <Nav.Link as={Link} to="/view-all-closed-trades" eventKey="/view-all-closed-trades" >View All Closed Trades</Nav.Link>
             </NavItem>
+            {
+              isAdmin &&
+                <NavItem>
+                  <Nav.Link as={Link} to="/resolve-conflicts" eventKey="/resolve-conflicts" >Resolve Conflicts</Nav.Link>
+                </NavItem>
+            }
           </Nav>
         </Navbar.Collapse>
       </Container>

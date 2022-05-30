@@ -4,14 +4,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import EnerygTradingContract from "./contracts/EnergyTrading.json";
 import getWeb3 from "./getWeb3";
 
-
 import Layout from "./Layout";
-import NoPage from "./pages/NoPage";
-
-import "./App.css";
 import Home from "./pages/Home";
 import CreateTrade from "./pages/CreateTrade";
 import MyOpenedTrades from "./pages/MyOpenedTrades";
+import Conflicts from "./pages/Conflicts";
+import NoPage from "./pages/NoPage";
+
+import "./App.css";
+
 import { Button, Container } from "react-bootstrap";
 
 import { ImSad2 } from "react-icons/im";
@@ -33,7 +34,7 @@ const extractAndAlertErrorMessage = (err) => {
 }
 
 class App extends Component {
-  state = { allRunningTrades: [], myOpenedTrades: [], 
+  state = { allRunningTrades: [], conflicts: [], myOpenedTrades: [], 
             web3: null, accounts: null, contract: null, 
             isLoading: true, isLoggedIn: false, isAdmin: false 
           };
@@ -92,12 +93,16 @@ class App extends Component {
   fetchAllOpenedTrades = async () => {
     const { accounts, contract } = this.state;
 
-    const allRunningTrades = [], myOpenedTrades = [];
+    const allRunningTrades = [], conflicts = [], myOpenedTrades = [];
     const allOpenedTrades = await contract.methods.fetchAllOpenedTrades().call();
 
     allOpenedTrades.forEach(openedTrade => {
       if (openedTrade["status"] === "0")  {
         allRunningTrades.push(openedTrade);
+      }
+
+      if (openedTrade["status"] === "4")  {
+        conflicts.push(openedTrade);
       }
       
       if (openedTrade["buyer"].toUpperCase() === accounts[0].toUpperCase() ||
@@ -109,6 +114,7 @@ class App extends Component {
     // Update state with the result.
     this.setState({ 
       allRunningTrades: allRunningTrades,
+      conflicts: conflicts,
       myOpenedTrades: myOpenedTrades,
     });
   }
@@ -201,6 +207,14 @@ class App extends Component {
       });
   }
 
+  adminResolveConflict = async (_id, _isSuccessfulTrade) => {
+    const { accounts, contract } = this.state;
+    await contract.methods.adminResolveConflict(_id, _isSuccessfulTrade).send({ from: accounts[0] })
+      .catch(err => {
+        extractAndAlertErrorMessage(err)
+      });
+  }
+
   render() {
     if (this.state.isLoading) {
       return (
@@ -254,7 +268,8 @@ class App extends Component {
             {/* {this.state.openedTrades.length > 0 && <Route index element={<RunningTradesList openedTrades={this.state.openedTrades} />} />} */}
             <Route index element={<Container><Home allRunningTrades={this.state.allRunningTrades} submitBid={this.bid} /></Container>} />
             <Route path="create-trade" element={<Container><CreateTrade onSubmit={this.createTrade} /></Container>} />
-            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict]} /></Container>} />
+            <Route path="my-opened-trades" element={<Container><MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} isAdmin={this.state.isAdmin} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict, this.adminResolveConflict]} /></Container>} />
+            <Route path="resolve-conflicts" element={<Container><Conflicts conflicts={this.state.conflicts} adminResolveConflict={this.adminResolveConflict} /></Container>} />
             <Route path="*" element={<Container><NoPage /></Container>} />
           </Route>
         </Routes>

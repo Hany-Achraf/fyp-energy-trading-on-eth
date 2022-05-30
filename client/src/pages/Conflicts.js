@@ -4,29 +4,27 @@ import { BsQuestionCircle } from "react-icons/bs"
 import { FaEthereum } from "react-icons/fa"
 
 
-const Home = ({ allRunningTrades, submitBid }) => {
+const Conflicts = ({ conflicts, adminResolveConflict }) => {
   const [tradeId, setTradeId] = useState(-1)
-  const [price, setPrice] = useState(0)
-  
   const [show, setShow] = useState(false);
 
-  const handleBid = (tradeId) => {
+  const handleResolveConflict = (tradeId) => {
     setShow(true)
     setTradeId(tradeId)
   }
   
-  const handleSubmit = (e) => {
+  const resolveConflict = (e, _isSuccessfulTrade) => {
     e.preventDefault()
-    submitBid(tradeId, price)
-    setShow(false);
+    adminResolveConflict(tradeId, _isSuccessfulTrade)
+    setShow(false)
   }
 
   return (
     <>
       {
-        allRunningTrades.length > 0 
+        conflicts.length > 0 
           ?
-            allRunningTrades.map(trade => {
+            conflicts.map(trade => {
               return (
                 <div className='row justify-content-center bg-light border rounded my-2'>
                   <div className='col-6'>
@@ -42,10 +40,10 @@ const Home = ({ allRunningTrades, submitBid }) => {
                   <div className='col-6 my-auto text-center'>
                     <div className='row'>
                       <div className='col-7'>
-                        <h5 className='text-muted'>RUNNING</h5>
+                        <h5 className='lead text-muted'>CONFLICT</h5>
                       </div>
                       <div className='col-5 text-center'>
-                        <Button variant="primary" onClick={() => handleBid(parseInt(trade["id"]))}>Bid</Button>
+                        <Button variant="warning" onClick={() => handleResolveConflict(parseInt(trade["id"]))}>Resolve Conflict</Button>
                       </div>
                     </div>
                   </div>
@@ -53,31 +51,26 @@ const Home = ({ allRunningTrades, submitBid }) => {
               );
             })
           :
-            <h5>No Running Trades to Show!!</h5>
+            <h5>No Conflicts to Show!!</h5>
       }
 
       <Modal show={show} onHide={() => setShow(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Place you bid</Modal.Title>
+          <Modal.Title>Resolve Conflict</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form> 
-            <Form.Group className="mb-3" controlId="price">
-              <InputGroup className="mb-3">
-                <InputGroup.Text><FaEthereum /></InputGroup.Text>
-                <Form.Control type="text" placeholder="Enter your bid (in Wei)" onChange={(e) => setPrice(parseInt(e.target.value))} />
-                <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="You must enter a cheaper selling price (in Wei) to overbid the current selling price (if any), otherwise you'll be wasting your ETH!!"><BsQuestionCircle /></InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-          </Form>
+            <p>
+                Resolve the conflict by marking the 
+                trade as SUCESSFUL or FAILED so the ETH will be transfered accordingly.
+            </p>
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShow(false)}>
-            Close
+          <Button variant="danger" onClick={(e) => resolveConflict(e, false)}>
+            Failed
           </Button>
-          <Button variant="primary" onClick={(e) => handleSubmit(e)}>
-            Submit
+          <Button variant="success" onClick={(e) => resolveConflict(e, true)}>
+            Successful
           </Button>
         </Modal.Footer>
       </Modal>
@@ -86,4 +79,4 @@ const Home = ({ allRunningTrades, submitBid }) => {
   )
 }
 
-export default Home
+export default Conflicts

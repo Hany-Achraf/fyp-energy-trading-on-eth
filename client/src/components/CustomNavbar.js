@@ -26,7 +26,7 @@ const CustomNavbar = ({ isAdmin }) => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto" activeKey={active} onSelect={(selectedKey) => setActive(selectedKey)}>
             <NavItem>
-                  <Nav.Link as={Link} to="/" eventKey="/">Home/Running Trades</Nav.Link>
+                  <Nav.Link as={Link} to="/" eventKey="/">Home</Nav.Link>
             </NavItem>
             <NavItem>
                   <Nav.Link as={Link} to="/create-trade" eventKey="/create-trade">Create Trade</Nav.Link>
@@ -35,7 +35,7 @@ const CustomNavbar = ({ isAdmin }) => {
                   <Nav.Link as={Link} to="/my-opened-trades" eventKey="/my-opened-trades">My Opened Trades</Nav.Link>
             </NavItem>
             <NavItem>
-                  <Nav.Link as={Link} to="/view-all-closed-trades" eventKey="/view-all-closed-trades" >View All Closed Trades</Nav.Link>
+                  <Nav.Link as={Link} to="/view-all-closed-trades" eventKey="/view-all-closed-trades" >View Closed Trades</Nav.Link>
             </NavItem>
             {
               isAdmin &&

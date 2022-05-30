@@ -8,7 +8,7 @@ const Status = {
   CONFLICT: '4'
 };
 
-const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) => {
+const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpenedTrades) => {
   const handleCancel = (e) => {
     e.preventDefault()
     actionsOnOpenedTrades[0](parseInt(trade["id"])) // cancelTrade()
@@ -53,30 +53,27 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
     e.preventDefault()
     actionsOnOpenedTrades[8](parseInt(trade["id"])) // sellerMarkConflict()
   }
+
+  const handleResolveConflict = (e, _isSuccessfulTrade) => {
+    e.preventDefault()
+    actionsOnOpenedTrades[9](parseInt(trade["id"]), _isSuccessfulTrade) // adminResolveConflict()
+  }
   
   if (trade["status"] === Status.CONFLICT) {
     return (
       <div className='row'>
         <div className='col-7'>
-          <h5 className='lead text-muted'>CONFLICT</h5>
+          <h5 className='text-muted'>CONFLICT</h5>
         </div>
-        <div className='col-5 text-end'>
+        {/* <div className='col-5 text-end'>
           {
-            // address.toUpperCase() === trade["seller"].toUpperCase() 
-            // ?
-            //   <>
-            //     <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {handleSellerConfirmFailure(e)}}>Confirm Failure</Button>
-            //     <Button variant="warning" onClick={(e) => {handleSellerMarkConflict(e)}}>Mark Conflict</Button>
-            //   </>
-            // : false // (Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000) < 1 
-            //   ?
-            //     <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="">
-            //       <Button variant="secondary" style={{"pointer-events": "none"}} disabled>Claim Money Back</Button>
-            //     </span>
-            //   :
-            //     <Button variant="secondary" onClick={(e) => {handleBuyerClaimMoneyBack(e)}}>Claim Money Back</Button>
+            isAdmin &&
+              <>
+                <Button className="me-2" variant="danger" onClick={(e) => {handleResolveConflict(e, false)}}>Failed</Button>
+                <Button variant="success" onClick={(e) => {handleResolveConflict(e, true)}}>Successful</Button>
+              </>
           }
-        </div>
+        </div> */}
       </div>
     )
   }
@@ -85,11 +82,11 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
     return (
       <div className='row'>
         <div className='col-7'>
-          <h5 className='lead text-muted'>PENDING SELLER CONFIRMATION</h5>
+          <h5 className='text-muted'>PENDING SELLER CONFIRMATION</h5>
         </div>
         <div className='col-5 text-center'>
           {
-            address.toUpperCase() === trade["seller"].toUpperCase() 
+            myAddress.toUpperCase() === trade["seller"].toUpperCase() 
             ?
               <>
                 <Button className="mb-2" variant="danger" onClick={(e) => {handleSellerConfirmFailure(e)}}>Confirm Failure</Button>
@@ -112,11 +109,11 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
     return (
       <div className='row'>
         <div className='col-7'>
-          <h5 className='lead text-muted'>PENDING BUYER CONFIRMATION</h5>
+          <h5 className='text-muted'>PENDING BUYER CONFIRMATION</h5>
         </div>
         <div className='col-5 text-center'>
           {
-            address.toUpperCase() === trade["buyer"].toUpperCase() 
+            myAddress.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
                 <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
@@ -139,11 +136,11 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
     return (
       <div className='row'>
         <div className='col-7'>
-          <h5 className='lead text-muted'>RUNNING</h5>
+          <h5 className='text-muted'>RUNNING</h5>
         </div>
         <div className='col-5 text-center'>
           {
-            address.toUpperCase() === trade["buyer"].toUpperCase() 
+            myAddress.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
                 <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {handleCancel(e)}}>Cancel</Button>
@@ -163,7 +160,7 @@ const tradeStatusDepenableComponent = (trade, address, actionsOnOpenedTrades) =>
   }
 }
 
-const MyOpenedTrades = ({ myOpenedTrades, myAddress, actionsOnOpenedTrades }) => {
+const MyOpenedTrades = ({ myOpenedTrades, myAddress, isAdmin, actionsOnOpenedTrades }) => {
   return (
     <>
       {
@@ -184,7 +181,7 @@ const MyOpenedTrades = ({ myOpenedTrades, myAddress, actionsOnOpenedTrades }) =>
                       </div>
                     </div>
                     <div className='col-6 my-auto text-center'>
-                      {tradeStatusDepenableComponent(trade, myAddress, actionsOnOpenedTrades)}
+                      {tradeStatusDepenableComponent(trade, myAddress, isAdmin, actionsOnOpenedTrades)}
                     </div>
                   </div>
                 )

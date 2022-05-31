@@ -162,7 +162,7 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
 
 const MyOpenedTrades = ({ myOpenedTrades, myAddress, isAdmin, actionsOnOpenedTrades }) => {
   return (
-    <>
+    <div className='container'>
       {
           myOpenedTrades.length > 0 
               ?
@@ -190,7 +190,7 @@ const MyOpenedTrades = ({ myOpenedTrades, myAddress, isAdmin, actionsOnOpenedTra
               <h5>No Opened Trades to Show!!</h5>
           
       }
-    </>
+    </div>
   )
 }
 

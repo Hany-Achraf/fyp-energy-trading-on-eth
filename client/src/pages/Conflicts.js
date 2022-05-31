@@ -20,7 +20,7 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
   }
 
   return (
-    <>
+    <div className='container'>
       {
         conflicts.length > 0 
           ?
@@ -75,7 +75,7 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
         </Modal.Footer>
       </Modal>
       
-    </>
+    </div>
   )
 }
 

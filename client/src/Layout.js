@@ -2,10 +2,10 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import CustomNavbar from "./components/CustomNavbar";
 
-const Layout = ({ isAdmin }) => {
+const Layout = ({ isAdmin, logout }) => {
   return (
     <>
-      <CustomNavbar isAdmin={isAdmin} />
+      <CustomNavbar isAdmin={isAdmin} logout={logout} />
       <Outlet />
     </>
   )

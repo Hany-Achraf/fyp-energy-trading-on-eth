@@ -1,0 +1,26 @@
+Trade 1 (Withdraw)
+    1. Firefox creates a trade (being the buyer).
+    2. Edge makes bidding offer.
+    3. Edge withdraws his bidding, causing the trade to be canceled since Firefox didn't end the bidding within 1 minute.
+
+Trade 2 (Normal)
+    1. Firefox creates a trade.
+    2. Edge makes bidding offer.
+    3. Brave overbids Edge. (Consider ERRORS)
+    4. Firefox ends the trade at that point.
+    5. Firefox confirms the success of the trade.
+
+Trade 3 (Seller Claims Money)
+    1. Firefox creates a trade.
+    2. Edge makes bidding offer.
+    4. Firefox ends the trade.
+    5. Firefox doesn't confirm the status of the trade within the specified number of minutes (2).
+    6. Edge claims his deserved money.
+
+Trade 4 (Conflict)
+    1. Firefox creates a trade.
+    2. Edge makes bidding offer.
+    4. Firefox ends the trade.
+    5. Firefox marks the trade as Failed.
+    6. Edge marks it as a conflict.
+    7. The Admin/Chrome resolves the conflict.

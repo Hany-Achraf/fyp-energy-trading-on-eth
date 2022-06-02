@@ -2,6 +2,12 @@ const mongoose = require('mongoose')
 const Web3 = require('web3')
 const EnerygTradingContract = require('../client/src/contracts/EnergyTrading.json')
 
+const Status = {
+    '1': 'CANCELED',
+    '5': 'SUCCESSFUL',
+    '6': 'FAILED'
+}
+
 const main = async () => {
     try {
         // initialize web3 and connecting to the smaty contract
@@ -39,7 +45,7 @@ const main = async () => {
                         numOfMins: event['returnValues']['trade']['numOfMins'],
                         bidAt: event['returnValues']['trade']['bidAt'],
                         biddingEndedAt: event['returnValues']['trade']['biddingEndedAt'],
-                        status: event['returnValues']['trade']['status'],
+                        status: Status[event['returnValues']['trade']['status']],
                         blockNumber: event['blockNumber']
                     });
                     console.log(res);
@@ -60,7 +66,7 @@ const main = async () => {
                         numOfMins: event['returnValues']['trade']['numOfMins'],
                         bidAt: event['returnValues']['trade']['bidAt'],
                         biddingEndedAt: event['returnValues']['trade']['biddingEndedAt'],
-                        status: event['returnValues']['trade']['status'],
+                        status: Status[event['returnValues']['trade']['status']],
                         blockNumber: event['blockNumber']
                     });
                     console.log(res);

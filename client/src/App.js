@@ -6,7 +6,7 @@ import getWeb3 from "./getWeb3";
 
 import Layout from "./Layout";
 import Home from "./pages/Home";
-import CreateTrade from "./pages/CreateTrade";
+// import CreateTrade from "./pages/CreateTrade";
 import MyOpenedTrades from "./pages/MyOpenedTrades";
 import Conflicts from "./pages/Conflicts";
 import NoPage from "./pages/NoPage";
@@ -35,10 +35,11 @@ const extractAndAlertErrorMessage = (err) => {
 }
 
 class App extends Component {
-  state = { runningTrades: [], conflicts: [], myOpenedTrades: [], 
-            web3: null, accounts: null, contract: null, 
-            isLoading: true, isLoggedIn: false, isAdmin: false 
-          }
+  state = { 
+    web3: null, accounts: null, contract: null,
+    isLoading: true, isLoggedIn: false, isAdmin: false,
+    runningTrades: [], conflicts: [], myOpenedTrades: []
+  }
 
   componentDidMount = async () => {
     try {
@@ -69,7 +70,6 @@ class App extends Component {
         ReactSession.set("storedAccount", null);
         this.setState({isAdmin: false, isLoggedIn: false, accounts: accounts})
       }.bind(this))
-
     } catch (error) {
       console.error(error)
     }
@@ -77,148 +77,172 @@ class App extends Component {
   };
 
   login = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     if (this.state.accounts !== null) {
       this.fetchAllOpenedTrades()
-      ReactSession.set("storedAccount", (this.state.accounts[0]).toUpperCase());
-      this.setState({isLoggedIn: true});
-      const adminAddress = await this.state.contract.methods.admin().call();
+      ReactSession.set("storedAccount", (this.state.accounts[0]).toUpperCase())
+      this.setState({isLoggedIn: true})
+      const adminAddress = await this.state.contract.methods.admin().call()
       if (adminAddress.toUpperCase() === (this.state.accounts[0]).toUpperCase()) {
-        this.setState({isAdmin: true});
+        this.setState({isAdmin: true})
       }
     } else {
-      alert("You must connect your MetaMask account first!!");
+      alert("You must connect your MetaMask account first!!")
     }
   }
 
   logout = () => {
-    ReactSession.set("storedAccount", null);
+    ReactSession.set("storedAccount", null)
     this.setState({isAdmin: false, isLoggedIn: false})
   }
 
   fetchAllOpenedTrades = async () => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
 
-    const runningTrades = [], conflicts = [], myOpenedTrades = [];
-    const allOpenedTrades = await contract.methods.fetchAllOpenedTrades().call();
+    const runningTrades = [], conflicts = [], myOpenedTrades = []
+    const allOpenedTrades = await contract.methods.fetchAllOpenedTrades().call()
 
     allOpenedTrades.forEach(openedTrade => {
       if (openedTrade["status"] === "0")  {
-        runningTrades.push(openedTrade);
+        runningTrades.push(openedTrade)
       }
 
       if (openedTrade["status"] === "4")  {
-        conflicts.push(openedTrade);
+        conflicts.push(openedTrade)
       }
       
       if (openedTrade["buyer"].toUpperCase() === accounts[0].toUpperCase() ||
           openedTrade["seller"].toUpperCase() === accounts[0].toUpperCase()) {
-        myOpenedTrades.push(openedTrade);
+        myOpenedTrades.push(openedTrade)
       }
-    });
+    })
 
     // Update state with the result.
     this.setState({ 
       runningTrades: runningTrades,
       conflicts: conflicts,
       myOpenedTrades: myOpenedTrades,
-    });
+    })
   }
 
   createTrade = async (_amountEnergyNeeded, _numOfMins) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   bid = async (_id, _price) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   withdrawBid = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.withdrawBid(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   cancelTrade = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.cancelTrade(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   buyerMarkFailedTrade = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.buyerMarkFailedTrade(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   buyerConfirmSuccessfulTrade = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.buyerConfirmSuccessfulTrade(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   sellerClaimMoney = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.sellerClaimMoney(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   buyerClaimMoneyBack = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.buyerClaimMoneyBack(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   sellerConfirmFailedTrade = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.sellerConfirmFailedTrade(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   sellerMarkConflict = async (_id) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.sellerMarkConflict(_id).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   endBidding = async (trade) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.endBidding(parseInt(trade["id"])).send({ from: accounts[0], value: parseInt(trade["sellingPrice"]) })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        window.location.reload()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   adminResolveConflict = async (_id, _isSuccessfulTrade) => {
-    const { accounts, contract } = this.state;
+    const { accounts, contract } = this.state
     await contract.methods.adminResolveConflict(_id, _isSuccessfulTrade).send({ from: accounts[0] })
-      .catch(err => {
+      .on('confirmation', (reciept) => {
+        this.fetchAllOpenedTrades()
+      }).catch(err => {
         extractAndAlertErrorMessage(err)
-      });
+      })
   }
 
   render() {
@@ -228,8 +252,8 @@ class App extends Component {
           <div className="row h-100">
             <div className="text-center my-auto">
               <img src={require("./assets/images/load.png")} width={250} height={250} />
-              <br/>
-              <p className="lead">Loading Web3, accounts, and contract...</p>
+              {/* <br/>
+              <p className="lead">Loading Web3, accounts, and contract...</p> */}
             </div>
           </div>
         </div>
@@ -290,8 +314,8 @@ class App extends Component {
                 </Route>
               :
                 <Route path="/" element={<Layout isAdmin={false} logout={this.logout} />}>
-                  <Route index element={<Home runningTrades={this.state.runningTrades} submitBid={this.bid} submitCreateTrade={this.createTrade} />} />
-                  <Route path="my-opened-trades" element={<MyOpenedTrades myOpenedTrades={this.state.myOpenedTrades} myAddress={this.state.accounts[0]} isAdmin={this.state.isAdmin} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict, this.adminResolveConflict]} />} />
+                  <Route index element={<Home myAddress={this.state.accounts[0]} runningTrades={this.state.runningTrades} submitBid={this.bid} submitCreateTrade={this.createTrade} />} />
+                  <Route path="my-opened-trades" element={<MyOpenedTrades myAddress={this.state.accounts[0]} myOpenedTrades={this.state.myOpenedTrades} isAdmin={this.state.isAdmin} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict, this.adminResolveConflict]} />} />
                   <Route path="/admin" element={<Unauthorized />} />
                   <Route path="*" element={<NoPage />} />
                 </Route>

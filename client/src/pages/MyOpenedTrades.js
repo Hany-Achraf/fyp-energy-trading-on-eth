@@ -53,11 +53,6 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
     e.preventDefault()
     actionsOnOpenedTrades[8](parseInt(trade["id"])) // sellerMarkConflict()
   }
-
-  const handleResolveConflict = (e, _isSuccessfulTrade) => {
-    e.preventDefault()
-    actionsOnOpenedTrades[9](parseInt(trade["id"]), _isSuccessfulTrade) // adminResolveConflict()
-  }
   
   if (trade["status"] === Status.CONFLICT) {
     return (
@@ -65,15 +60,6 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
         <div className='col-7'>
           <h5 className='text-muted'>CONFLICT</h5>
         </div>
-        {/* <div className='col-5 text-end'>
-          {
-            isAdmin &&
-              <>
-                <Button className="me-2" variant="danger" onClick={(e) => {handleResolveConflict(e, false)}}>Failed</Button>
-                <Button variant="success" onClick={(e) => {handleResolveConflict(e, true)}}>Successful</Button>
-              </>
-          }
-        </div> */}
       </div>
     )
   }
@@ -105,7 +91,7 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
     )
   }
 
-  if (trade["status"] === Status.PENDING_BUYER_CONFIRMATION) { // Handle timing and seller/buyer
+  if (trade["status"] === Status.PENDING_BUYER_CONFIRMATION) {
     return (
       <div className='row'>
         <div className='col-7'>
@@ -116,16 +102,24 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
             myAddress.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
-                <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
+                {
+                  false
+                  ?
+                    <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="You CANNOT mark the trade as FAILED before the end of the time you have specified earlier in the trade!">
+                      <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" style={{"pointer-events": "none"}} disabled>Failed</Button>
+                    </span>
+                  :
+                    <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
+                }
                 <Button variant="primary" onClick={(e) => {handleBuyerMarkSuccessful(e)}}>Successful</Button>
               </>
-            : false // (Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000) < 1 
+            : false
               ?
                 <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="">
-                  <Button variant="success" style={{"pointer-events": "none"}} disabled>Claim Money</Button>
+                  <Button variant="secondary" style={{"pointer-events": "none"}} disabled>Claim Money</Button>
                 </span>
               :
-                <Button variant="success" onClick={(e) => {handleSellerClaimMoney(e)}}>Claim Money</Button>
+                <Button variant="secondary" onClick={(e) => {handleSellerClaimMoney(e)}}>Claim Money</Button>
           }
         </div>
       </div>
@@ -144,7 +138,15 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
             ?
               <>
                 <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {handleCancel(e)}}>Cancel</Button>
-                <Button variant="primary" onClick={(e) => {handleEndBidding(e)}}>End Bindding</Button>
+                {
+                  trade["seller"].toUpperCase() === "0X0000000000000000000000000000000000000000"
+                  ?
+                    <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="You CANNOT end bidding on a trade that you haven't received any bid on. You may Cancel it instead.">
+                      <Button variant="primary" style={{"pointer-events": "none"}} disabled>End Bidding</Button>
+                    </span>
+                  :
+                    <Button variant="primary" onClick={(e) => {handleEndBidding(e)}}>End Bindding</Button>
+                }
               </>
             : (Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000) < 1 
               ?

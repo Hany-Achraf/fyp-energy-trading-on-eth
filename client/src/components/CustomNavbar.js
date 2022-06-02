@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react"
 import { Container, Navbar, NavItem, Nav, Button } from "react-bootstrap"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"
 import { GiElectric } from "react-icons/gi"
 
 const CustomNavbar = ({ isAdmin, logout }) => {
-    const [active, setActive] = useState('/');
+    const [active, setActive] = useState('/')
 
-    const navigate = useNavigate();
+    useEffect(() => {
+      setActive(window.location.pathname)
+    }, [active])
+    
+    const navigate = useNavigate()
 
     const handleLogout = (e) => {
       e.preventDefault()

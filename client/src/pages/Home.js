@@ -6,7 +6,7 @@ import { GiElectric } from "react-icons/gi"
 import { BiTime } from "react-icons/bi"
 
 
-const Home = ({ runningTrades, submitBid, submitCreateTrade }) => {
+const Home = ({ myAddress, runningTrades, submitBid, submitCreateTrade }) => {
   const [showBidModal, setShowBidModal] = useState(false)
   const [showCreateTradeModal, setShowCreateTradeModal] = useState(false)
   
@@ -65,7 +65,15 @@ const Home = ({ runningTrades, submitBid, submitCreateTrade }) => {
                         <h5 className='text-muted'>RUNNING</h5>
                       </div>
                       <div className='col-5 text-end'>
-                        <Button variant="primary" size="lg" onClick={() => handleBid(parseInt(trade["id"]))}>Bid</Button>
+                        {
+                          myAddress.toUpperCase() === trade["buyer"].toUpperCase()
+                          ?
+                            <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="Yo CANNOT bid on your own trade!">
+                              <Button variant="primary" size="lg" style={{"pointer-events": "none"}} disabled>Bid</Button>
+                            </span>
+                          :
+                            <Button variant="primary" size="lg" onClick={() => handleBid(parseInt(trade["id"]))}>Bid</Button>
+                        }
                       </div>
                     </div>
                   </div>

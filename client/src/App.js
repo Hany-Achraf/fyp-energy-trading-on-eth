@@ -1,24 +1,20 @@
 import React, { Component } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ReactSession }  from 'react-client-session';
 
 import EnerygTradingContract from "./contracts/EnergyTrading.json";
 import getWeb3 from "./getWeb3";
 
 import Layout from "./Layout";
 import Home from "./pages/Home";
-// import CreateTrade from "./pages/CreateTrade";
 import MyOpenedTrades from "./pages/MyOpenedTrades";
 import Conflicts from "./pages/Conflicts";
 import NoPage from "./pages/NoPage";
 import Unauthorized from "./pages/Unauthorized";
 
 import "./App.css";
-
-import { Button, Container } from "react-bootstrap";
-
+import { Button } from "react-bootstrap";
 import { ImSad2 } from "react-icons/im";
-
-import { ReactSession }  from 'react-client-session';
 
 const extractAndAlertErrorMessage = (err) => {
   if (err["code"] === 4001) return
@@ -128,121 +124,107 @@ class App extends Component {
   createTrade = async (_amountEnergyNeeded, _numOfMins) => {
     const { accounts, contract } = this.state
     await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
+        window.location.href = "/my-opened-trades"
+        setTimeout(() => {
+          this.setState({isLoading: false})
+        }, 500)
       })
+      .catch((err) =>extractAndAlertErrorMessage(err))
   }
 
   bid = async (_id, _price) => {
     const { accounts, contract } = this.state
     await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
+        window.location.href = "/my-opened-trades"
+        setTimeout(() => {
+          this.setState({isLoading: false})
+        }, 500)
       })
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   withdrawBid = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.withdrawBid(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   cancelTrade = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.cancelTrade(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   buyerMarkFailedTrade = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.buyerMarkFailedTrade(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   buyerConfirmSuccessfulTrade = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.buyerConfirmSuccessfulTrade(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   sellerClaimMoney = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.sellerClaimMoney(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   buyerClaimMoneyBack = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.buyerClaimMoneyBack(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   sellerConfirmFailedTrade = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.sellerConfirmFailedTrade(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   sellerMarkConflict = async (_id) => {
     const { accounts, contract } = this.state
     await contract.methods.sellerMarkConflict(_id).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   endBidding = async (trade) => {
     const { accounts, contract } = this.state
     await contract.methods.endBidding(parseInt(trade["id"])).send({ from: accounts[0], value: parseInt(trade["sellingPrice"]) })
-      .on('confirmation', (reciept) => {
-        window.location.reload()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   adminResolveConflict = async (_id, _isSuccessfulTrade) => {
     const { accounts, contract } = this.state
     await contract.methods.adminResolveConflict(_id, _isSuccessfulTrade).send({ from: accounts[0] })
-      .on('confirmation', (reciept) => {
-        this.fetchAllOpenedTrades()
-      }).catch(err => {
-        extractAndAlertErrorMessage(err)
-      })
+      .on('transactionHash', (hash) => this.setState({isLoading: true}))
+      .on('confirmation', (reciept) => this.fetchAllOpenedTrades().then(() => this.setState({isLoading: false})))
+      .catch((err) => extractAndAlertErrorMessage(err))
   }
 
   render() {
@@ -252,8 +234,6 @@ class App extends Component {
           <div className="row h-100">
             <div className="text-center my-auto">
               <img src={require("./assets/images/load.png")} width={250} height={250} />
-              {/* <br/>
-              <p className="lead">Loading Web3, accounts, and contract...</p> */}
             </div>
           </div>
         </div>

@@ -131,8 +131,6 @@ contract EnergyTrading {
         Trade storage targetedTrade = openedTrades[tradeIndex];
         require(msg.sender == targetedTrade.buyer, "You're not allowed to perform this action!");
         require(targetedTrade.status == Status.PENDING_BUYER_CONFIRMATION, "The current status of the trade doesn't permit you to perform this action");
-        // require(block.timestamp >= targetedTrade.timeBiddingEnded + targetedTrade.numOfHours * 60 * 60, "You can't mark a trade as FAILED before the number of hours specified in the trade starting from the time you ended the bidding");
-        require(block.timestamp >= targetedTrade.biddingEndedAt + targetedTrade.numOfMins * 60, "You can't mark a trade as FAILED before the number of minutes specified in the trade starting from the time you ended the bidding");
 
         targetedTrade.status = Status.PENDING_SELLER_CONFIRMATION;
     }

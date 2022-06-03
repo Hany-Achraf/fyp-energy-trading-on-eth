@@ -19,39 +19,47 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
     setShow(false)
   }
 
+  if (conflicts.length === 0) {
+    return (
+      <div className="container h-75">
+        <div className="row h-100">
+          <div className="text-center my-auto">
+            <h3>No Conflicts to Resolve :)</h3>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className='container'>
+    <div className='container py-2'>
       {
-        conflicts.length > 0 
-          ?
-            conflicts.map(trade => {
-              return (
-                <div className='row justify-content-center bg-light border rounded my-2'>
-                  <div className='col-6'>
-                    <div>
-                      <b>Trade Id:</b> {trade["id"]}<br/>
-                      <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
-                      <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
-                      <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
-                      <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
-                      <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
-                    </div>
+        conflicts.map(trade => {
+          return  (
+            <div className='row justify-content-center bg-light border rounded mb-1'>
+              <div className='col-6'>
+                <div>
+                  <b>Trade Id:</b> {trade["id"]}<br/>
+                  <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
+                  <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
+                  <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
+                  <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
+                  <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
+                </div>
+              </div>
+              <div className='col-6 my-auto text-center'>
+                <div className='row'>
+                  <div className='col-7'>
+                    <h5 className='lead text-muted'>CONFLICT</h5>
                   </div>
-                  <div className='col-6 my-auto text-center'>
-                    <div className='row'>
-                      <div className='col-7'>
-                        <h5 className='lead text-muted'>CONFLICT</h5>
-                      </div>
-                      <div className='col-5 text-center'>
-                        <Button variant="warning" onClick={() => handleResolveConflict(parseInt(trade["id"]))}>Resolve Conflict</Button>
-                      </div>
-                    </div>
+                  <div className='col-5 text-center'>
+                    <Button variant="warning" onClick={() => handleResolveConflict(parseInt(trade["id"]))}>Resolve Conflict</Button>
                   </div>
                 </div>
-              );
-            })
-          :
-            <h5>No Conflicts to Show!!</h5>
+              </div>
+            </div>
+          )
+        })
       }
 
       <Modal show={show} onHide={() => setShow(false)}>
@@ -60,8 +68,8 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
         </Modal.Header>
         <Modal.Body>
             <p>
-                Resolve the conflict by marking the 
-                trade as SUCESSFUL or FAILED so the ETH will be transfered accordingly.
+              Resolve the conflict by marking the 
+              trade as SUCESSFUL or FAILED so the ETH will be transfered accordingly.
             </p>
         </Modal.Body>
 
@@ -74,7 +82,6 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      
     </div>
   )
 }

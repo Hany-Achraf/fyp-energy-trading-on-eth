@@ -33,6 +33,123 @@ const Home = ({ myAddress, runningTrades, submitBid, submitCreateTrade }) => {
     setShowCreateTradeModal(false)
   }
 
+  // // Create New Trade Modal
+  // const CreateTradeModal = () => {
+  //   return (
+  //     <Modal show={showCreateTradeModal} onHide={() => setShowCreateTradeModal(false)}>
+  //       <Modal.Header closeButton>
+  //         <Modal.Title>Create New Trade</Modal.Title>
+  //       </Modal.Header>
+  //       <Modal.Body>
+  //         <Form> 
+  //           <Form.Group className="mb-3" controlId="amountEnergyNeeded">
+  //             <InputGroup className="mb-3">
+  //               <InputGroup.Text><GiElectric /></InputGroup.Text>
+  //               <Form.Control type="text" placeholder="Enter amount of energy (in Watt)" onChange={(e) => setAmountEnergyNeeded(parseInt(e.target.value))} />
+  //               <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+  //             </InputGroup>
+  //           </Form.Group>
+  
+  //           <Form.Group className="mb-3" controlId="numOfMins">
+  //             <InputGroup className="mb-3">
+  //               <InputGroup.Text><BiTime /></InputGroup.Text>
+  //               <Form.Control type="text" placeholder="Enter number of minutes" onChange={(e) => setNumOfMins(parseInt(e.target.value))} />
+  //               <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+  //             </InputGroup>
+  //           </Form.Group>
+  //         </Form>
+  //       </Modal.Body>
+  
+  //       <Modal.Footer>
+  //         <Button variant="secondary" onClick={() => setShowCreateTradeModal(false)}>
+  //           Close
+  //         </Button>
+  //         <Button variant="primary" onClick={(e) => handleSubmitCreateTrade(e)}>
+  //           Submit
+  //         </Button>
+  //       </Modal.Footer>
+  //     </Modal>
+  //   )
+  // }
+  
+  // // Bid Modal Modal
+  // const BidModal = () => {
+  //   return (
+  //     <Modal show={showBidModal} onHide={() => setShowBidModal(false)}>
+  //       <Modal.Header closeButton>
+  //         <Modal.Title>Place your bid</Modal.Title>
+  //       </Modal.Header>
+  //       <Modal.Body>
+  //         <Form> 
+  //           <Form.Group className="mb-3" controlId="price">
+  //             <InputGroup className="mb-3">
+  //               <InputGroup.Text><FaEthereum /></InputGroup.Text>
+  //               <Form.Control type="text" placeholder="Enter your bid (in Wei)" onChange={(e) => setPrice(parseInt(e.target.value))} />
+  //               <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="You must enter a cheaper selling price (in Wei) to overbid the current selling price (if any), otherwise you'll be wasting your ETH!!"><BsQuestionCircle /></InputGroup.Text>
+  //             </InputGroup>
+  //           </Form.Group>
+  //         </Form>
+  //       </Modal.Body>
+
+  //       <Modal.Footer>
+  //         <Button variant="secondary" onClick={() => setShowBidModal(false)}>
+  //           Close
+  //         </Button>
+  //         <Button variant="primary" onClick={(e) => handleSubmitBid(e)}>
+  //           Submit
+  //         </Button>
+  //       </Modal.Footer>
+  //     </Modal>
+  //   )
+  // }
+
+  if (runningTrades.length === 0) {
+    return (
+      <div className="container h-75">
+        <div className="row h-100">
+          <div className="text-center my-auto">
+            <h4>No Running Trades to Show :(</h4>
+            <Button variant="success" size="lg" className="text-light" onClick={() => handleCreateNewTrade()}>Create New Trade</Button>
+          </div>
+        </div>
+        {/* <CreateTradeModal /> */}
+        <Modal show={showCreateTradeModal} onHide={() => setShowCreateTradeModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Create New Trade</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form> 
+              <Form.Group className="mb-3" controlId="amountEnergyNeeded">
+                <InputGroup className="mb-3">
+                  <InputGroup.Text><GiElectric /></InputGroup.Text>
+                  <Form.Control type="text" placeholder="Enter amount of energy (in Watt)" onChange={(e) => setAmountEnergyNeeded(parseInt(e.target.value))} />
+                  <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+    
+              <Form.Group className="mb-3" controlId="numOfMins">
+                <InputGroup className="mb-3">
+                  <InputGroup.Text><BiTime /></InputGroup.Text>
+                  <Form.Control type="text" placeholder="Enter number of minutes" onChange={(e) => setNumOfMins(parseInt(e.target.value))} />
+                  <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+    
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowCreateTradeModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={(e) => handleSubmitCreateTrade(e)}>
+              Submit
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </div>
+    )
+  }
+
   return (
     <div className='container'>
       <div className='row align-items-center my-2'>
@@ -44,82 +161,77 @@ const Home = ({ myAddress, runningTrades, submitBid, submitCreateTrade }) => {
         </div>
       </div>
       {
-        runningTrades.length > 0 
-          ?
-            runningTrades.map(trade => {
-              return (
-                <div className='row justify-content-center bg-light border rounded my-2'>
-                  <div className='col-6'>
-                    <div>
-                      <b>Trade Id:</b> {trade["id"]}<br/>
-                      <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
-                      <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
-                      <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
-                      <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
-                      <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
-                    </div>
+        runningTrades.map(trade => {
+          return (
+            <div className='row justify-content-center bg-light border rounded my-2'>
+              <div className='col-6'>
+                <div>
+                  <b>Trade Id:</b> {trade["id"]}<br/>
+                  <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
+                  <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
+                  <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
+                  <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
+                  <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
+                </div>
+              </div>
+              <div className='col-6 my-auto text-center'>
+                <div className='row align-items-center'>
+                  <div className='col-7'>
+                    <h5 className='text-muted'>RUNNING</h5>
                   </div>
-                  <div className='col-6 my-auto text-center'>
-                    <div className='row align-items-center'>
-                      <div className='col-7'>
-                        <h5 className='text-muted'>RUNNING</h5>
-                      </div>
-                      <div className='col-5 text-end'>
-                        {
-                          myAddress.toUpperCase() === trade["buyer"].toUpperCase()
-                          ?
-                            <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="Yo CANNOT bid on your own trade!">
-                              <Button variant="primary" size="lg" style={{"pointer-events": "none"}} disabled>Bid</Button>
-                            </span>
-                          :
-                            <Button variant="primary" size="lg" onClick={() => handleBid(parseInt(trade["id"]))}>Bid</Button>
-                        }
-                      </div>
-                    </div>
+                  <div className='col-5 text-end'>
+                    {
+                      myAddress.toUpperCase() === trade["buyer"].toUpperCase()
+                      ?
+                        <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="Yo CANNOT bid on your own trade!">
+                          <Button variant="primary" size="lg" style={{"pointer-events": "none"}} disabled>Bid</Button>
+                        </span>
+                      :
+                        <Button variant="primary" size="lg" onClick={() => handleBid(parseInt(trade["id"]))}>Bid</Button>
+                    }
                   </div>
                 </div>
-              );
-            })
-          :
-            <h5>No Running Trades to Show!!</h5>
+              </div>
+            </div>
+          )
+        })
       }
+        {/* <CreateTradeModal /> */}
+        <Modal show={showCreateTradeModal} onHide={() => setShowCreateTradeModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Create New Trade</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form> 
+              <Form.Group className="mb-3" controlId="amountEnergyNeeded">
+                <InputGroup className="mb-3">
+                  <InputGroup.Text><GiElectric /></InputGroup.Text>
+                  <Form.Control type="text" placeholder="Enter amount of energy (in Watt)" onChange={(e) => setAmountEnergyNeeded(parseInt(e.target.value))} />
+                  <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+    
+              <Form.Group className="mb-3" controlId="numOfMins">
+                <InputGroup className="mb-3">
+                  <InputGroup.Text><BiTime /></InputGroup.Text>
+                  <Form.Control type="text" placeholder="Enter number of minutes" onChange={(e) => setNumOfMins(parseInt(e.target.value))} />
+                  <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
+            </Form>
+          </Modal.Body>
+    
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowCreateTradeModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={(e) => handleSubmitCreateTrade(e)}>
+              Submit
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
-      {/* Create New Trade Modal*/}
-      <Modal show={showCreateTradeModal} onHide={() => setShowCreateTradeModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Create New Trade</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form> 
-            <Form.Group className="mb-3" controlId="amountEnergyNeeded">
-              <InputGroup className="mb-3">
-                <InputGroup.Text><GiElectric /></InputGroup.Text>
-                <Form.Control type="text" placeholder="Enter amount of energy (in Watt)" onChange={(e) => setAmountEnergyNeeded(parseInt(e.target.value))} />
-                <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="numOfMins">
-              <InputGroup className="mb-3">
-                <InputGroup.Text><BiTime /></InputGroup.Text>
-                <Form.Control type="text" placeholder="Enter number of minutes" onChange={(e) => setNumOfMins(parseInt(e.target.value))} />
-                <InputGroup.Text data-bs-toggle="tooltip" data-bs-placement="right" title="Specify the amount of energy (in Watt) that you want to buy."><BsQuestionCircle /></InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowCreateTradeModal(false)}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={(e) => handleSubmitCreateTrade(e)}>
-            Submit
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      {/* Bidding Modal*/}
+      {/* <BidModal /> */}
       <Modal show={showBidModal} onHide={() => setShowBidModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Place your bid</Modal.Title>
@@ -145,7 +257,6 @@ const Home = ({ myAddress, runningTrades, submitBid, submitCreateTrade }) => {
           </Button>
         </Modal.Footer>
       </Modal>
-      
     </div>
   )
 }

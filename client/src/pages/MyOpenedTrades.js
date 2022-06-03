@@ -102,18 +102,10 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
             myAddress.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
-                {
-                  false
-                  ?
-                    <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="You CANNOT mark the trade as FAILED before the end of the time you have specified earlier in the trade!">
-                      <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" style={{"pointer-events": "none"}} disabled>Failed</Button>
-                    </span>
-                  :
-                    <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
-                }
+                <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
                 <Button variant="primary" onClick={(e) => {handleBuyerMarkSuccessful(e)}}>Successful</Button>
               </>
-            : false
+            : (Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000) < parseInt(trade["numOfMins"])
               ?
                 <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="">
                   <Button variant="secondary" style={{"pointer-events": "none"}} disabled>Claim Money</Button>
@@ -163,34 +155,45 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
 }
 
 const MyOpenedTrades = ({ myOpenedTrades, myAddress, isAdmin, actionsOnOpenedTrades }) => {
+  if (myOpenedTrades.length === 0) {
+    return (
+      <div className="container h-75">
+        <div className="row h-100">
+          <div className="text-center my-auto">
+            <h4>No Opened Trades to Show!!</h4>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className='container'>
+    <div className='container py-2'>
       {
-          myOpenedTrades.length > 0 
-              ?
-              myOpenedTrades.map(trade => {
-                return (
-                  <div className='row justify-content-center bg-light border rounded my-2'>
-                    <div className='col-6'>
-                      <div>
-                        <b>Trade Id:</b> {trade["id"]}<br/>
-                        <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
-                        <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
-                        <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
-                        <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
-                        <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
-                        <b>Bid placed before:</b> {((Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000)).toString()} Mins<br/>
-                      </div>
-                    </div>
-                    <div className='col-6 my-auto text-center'>
-                      {tradeStatusDepenableComponent(trade, myAddress, isAdmin, actionsOnOpenedTrades)}
-                    </div>
-                  </div>
-                )
-              })
-              :
-              <h5>No Opened Trades to Show!!</h5>
-          
+        myOpenedTrades.map(trade => {
+          return  (
+            <div className='row justify-content-center bg-light border rounded mb-1'>
+              <div className='col-6'>
+                <div>
+                  <b>Trade Id:</b> {trade["id"]}<br/>
+                  <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
+                  <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
+                  <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
+                  <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
+                  <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
+                  <b>Bid placed before:</b> {((Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000)).toString()} Mins<br/>
+                  {
+                    trade["status"] !== Status.RUNNING &&
+                      <><b>Bidding Ended before:</b> {((Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000)).toString()} Mins<br/></>
+                  }
+                </div>
+              </div>
+              <div className='col-6 my-auto text-center'>
+                {tradeStatusDepenableComponent(trade, myAddress, isAdmin, actionsOnOpenedTrades)}
+              </div>
+            </div>
+          )
+        })
       }
     </div>
   )

@@ -11,28 +11,23 @@ const Status = {
 const main = async () => {
     try {
         // initialize web3 and connecting to the smaty contract
-        const web3 = new Web3('ws://127.0.0.1:7545');
+        const web3 = new Web3('ws://127.0.0.1:7545')
 
         // Get the contract instance.
-        const networkId = await web3.eth.net.getId();
-        const deployedNetwork = EnerygTradingContract.networks[networkId];
+        const networkId = await web3.eth.net.getId()
+        const deployedNetwork = EnerygTradingContract.networks[networkId]
         const contract = new web3.eth.Contract(
-            EnerygTradingContract.abi,
+            EnerygTradingContract.abi, 
             deployedNetwork && deployedNetwork.address,
-        );
+        )
 
-        // Connect to the mongodb
-        const mongoDBUrl = 'mongodb://localhost/fyp_energy_trading_web2'
-        await mongoose.connect(mongoDBUrl);
-
-        const ClosedTrade = mongoose.model('ClosedTrade', new mongoose.Schema({}, { strict: false }), 'closed_trades');
-        const data = await ClosedTrade.findOne().sort('-blockNumber').select({blockNumber:1,_id:0});
-        const biggestBlockNumber = data === null || data['blockNumber'] === undefined ? -1 : data['blockNumber'];
+        // Connect to the mongodb & create model
+        await mongoose.connect('mongodb://localhost/fyp_energy_trading_web2')
+        const ClosedTrade = mongoose.model('ClosedTrade', new mongoose.Schema({}, { strict: false }), 'closed_trades')
         
-        console.log(`Biggest Block Number: ${biggestBlockNumber}`);
-
-        // sync between the DB and blockchain by updating the DB with the events 
-        // that have been emitted when the listener was shut down
+        // sync between the DB and blockchain by updating the DB with the events that have been emitted when the listener was shut down
+        const data = await ClosedTrade.findOne().sort('-blockNumber').select({blockNumber:1,_id:0})
+        const biggestBlockNumber = data === null || data['blockNumber'] === undefined ? -1 : data['blockNumber']
         contract.getPastEvents('TradeClosed', {fromBlock: biggestBlockNumber + 1, toBlock: 'latest'})
             .then((events) => {
                 events.forEach(async (event) => {
@@ -47,11 +42,12 @@ const main = async () => {
                         biddingEndedAt: event['returnValues']['trade']['biddingEndedAt'],
                         status: Status[event['returnValues']['trade']['status']],
                         blockNumber: event['blockNumber']
-                    });
-                    console.log(res);
+                    })
+                    console.log(res)
                 })
             })
             .catch(err => console.log(err))
+
 
         // start listening to the new events emitted in the BC and update the DB with it
         web3.eth.getBlockNumber().then((latestBlockNumber) => {
@@ -68,14 +64,17 @@ const main = async () => {
                         biddingEndedAt: event['returnValues']['trade']['biddingEndedAt'],
                         status: Status[event['returnValues']['trade']['status']],
                         blockNumber: event['blockNumber']
-                    });
-                    console.log(res);
+                    })
+                    console.log(res)
                 })
                 .on('error', err => console.log(err))
-        });
+        })
     } catch (err) {
         console.error(err);
     }
 }
 
+// run the main function
 main()
+
+

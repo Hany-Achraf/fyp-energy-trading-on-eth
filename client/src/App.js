@@ -15,6 +15,7 @@ import Unauthorized from "./pages/Unauthorized";
 import "./App.css";
 import { Button } from "react-bootstrap";
 import { ImSad2 } from "react-icons/im";
+import ClosedTrades from "./pages/ClosedTrades";
 
 const extractAndAlertErrorMessage = (err) => {
   if (err["code"] === 4001) return
@@ -123,7 +124,9 @@ class App extends Component {
 
   createTrade = async (_amountEnergyNeeded, _numOfMins) => {
     const { accounts, contract } = this.state
-    await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
+    
+    try {
+      await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
       .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
         window.location.href = "/my-opened-trades"
@@ -132,11 +135,16 @@ class App extends Component {
         }, 500)
       })
       .catch((err) =>extractAndAlertErrorMessage(err))
+    } catch(err) {
+      alert("INVALID INPUT: You must enter integer values!")
+    }
   }
 
   bid = async (_id, _price) => {
     const { accounts, contract } = this.state
-    await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
+
+    try {
+      await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
       .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
         window.location.href = "/my-opened-trades"
@@ -145,6 +153,9 @@ class App extends Component {
         }, 500)
       })
       .catch((err) => extractAndAlertErrorMessage(err))
+    } catch(err) {
+      alert("INVALID INPUT: You must enter integer values!")
+    }
   }
 
   withdrawBid = async (_id) => {
@@ -245,7 +256,7 @@ class App extends Component {
         <div className="container-fluid h-100">
           <div className="row h-100">
             <div className="text-center my-auto">
-              <p className="lead">Sorry, your browser is NOT supporting <b>Web3</b></p>
+              <p className="lead">Sorry, your browser is NOT supporting <b>Web3</b>, or the local Ethereum network on Ganache is DOWN</p>
               <h1><ImSad2 /></h1>
             </div>
           </div>
@@ -289,6 +300,7 @@ class App extends Component {
                 <Route path="/" element={<Layout isAdmin={true} logout={this.logout} />}>
                   <Route exact path="/" element={<Navigate to="/admin" />} /> 
                   <Route path="/admin" element={<Conflicts conflicts={this.state.conflicts} adminResolveConflict={this.adminResolveConflict} />} />
+                  <Route path="closed-trades" element={<ClosedTrades></ClosedTrades>} />
                   <Route path="/my-opened-trades" element={<Unauthorized />} />
                   <Route path="*" element={<NoPage />} />
                 </Route>
@@ -296,6 +308,7 @@ class App extends Component {
                 <Route path="/" element={<Layout isAdmin={false} logout={this.logout} />}>
                   <Route index element={<Home myAddress={this.state.accounts[0]} runningTrades={this.state.runningTrades} submitBid={this.bid} submitCreateTrade={this.createTrade} />} />
                   <Route path="my-opened-trades" element={<MyOpenedTrades myAddress={this.state.accounts[0]} myOpenedTrades={this.state.myOpenedTrades} isAdmin={this.state.isAdmin} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict, this.adminResolveConflict]} />} />
+                  <Route path="closed-trades" element={<ClosedTrades></ClosedTrades>} />
                   <Route path="/admin" element={<Unauthorized />} />
                   <Route path="*" element={<NoPage />} />
                 </Route>

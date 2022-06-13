@@ -45,7 +45,7 @@ const CustomNavbar = ({ isAdmin, logout }) => {
                   </>
             }
             <NavItem>
-              <Nav.Link as={Link} to="/view-all-closed-trades" eventKey="/view-all-closed-trades" >View All Closed Trades</Nav.Link>
+              <Nav.Link as={Link} to="/closed-trades" eventKey="/closed-trades" >View Closed Trades</Nav.Link>
             </NavItem>
             <NavItem>
               <Button variant="danger" className="text-light lead" onClick={(e) => handleLogout(e)}>Logout</Button>

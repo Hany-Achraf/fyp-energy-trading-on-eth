@@ -154,7 +154,7 @@ const Home = ({ myAddress, runningTrades, submitBid, submitCreateTrade }) => {
     <div className='container'>
       <div className='row align-items-center my-2'>
         <div className='col px-0'>
-          <h3 className='text-muted'>List of current running trades..</h3>
+          <h3 className='text-dark'>List of current running trades..</h3>
         </div>
         <div className='col px-0 text-end'>
           <Button variant="success" size="lg" className="text-light" onClick={() => handleCreateNewTrade()}>Create New Trade</Button>

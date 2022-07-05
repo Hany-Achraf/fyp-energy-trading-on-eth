@@ -14,10 +14,17 @@ Trade 3 (Seller Claims Money)
     1. Firefox creates a trade.
     2. Edge makes bidding offer.
     3. Firefox ends the trade.
-    4. Firefox doesn't confirm the status of the trade within the specified number of minutes (2).
-    5. Edge claims his deserved money.
+    4. Firefox doesn't confirm the status of the trade within the specified number of minutes (7).
+    5. Edge claims his deserved money one minute after the specified number of minutes. (7 + 1 = 8 mins)
 
-Trade 4 (Conflict)
+Trade 4 (Buyer Claims Money)
+    1. Firefox creates a trade.
+    2. Edge makes bidding offer.
+    3. Firefox ends the trade.
+    4. After the passing of the specified amount of time, Firefox marks the trade as a FAILED trade.
+    5. Firefox claims his money back one minute after the trade being marked as FAILED.
+
+Trade 5 (Conflict)
     1. Firefox creates a trade.
     2. Edge makes bidding offer.
     3. Firefox ends the trade.

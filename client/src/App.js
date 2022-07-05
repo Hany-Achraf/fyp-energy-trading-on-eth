@@ -57,7 +57,7 @@ class App extends Component {
       if (storedAccount !== null && storedAccount === accounts[0].toUpperCase()) {
         this.fetchAllOpenedTrades()
         this.setState({isLoggedIn: true})
-        const adminAddress = await instance.methods.admin().call()
+        const adminAddress = await instance.methods.getAdminAddress().call()
         if (adminAddress.toUpperCase() === storedAccount) {
           this.setState({isAdmin: true})
         }
@@ -79,7 +79,7 @@ class App extends Component {
       this.fetchAllOpenedTrades()
       ReactSession.set("storedAccount", (this.state.accounts[0]).toUpperCase())
       this.setState({isLoggedIn: true})
-      const adminAddress = await this.state.contract.methods.admin().call()
+      const adminAddress = await this.state.contract.methods.getAdminAddress().call()
       if (adminAddress.toUpperCase() === (this.state.accounts[0]).toUpperCase()) {
         this.setState({isAdmin: true})
       }
@@ -126,7 +126,7 @@ class App extends Component {
     const { accounts, contract } = this.state
     
     try {
-      await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 100000000000000000 })
+      await contract.methods.createTrade(_amountEnergyNeeded, _numOfMins).send({ from: accounts[0], value: 5000000000000000000 })
       .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
         window.location.href = "/my-opened-trades"
@@ -140,11 +140,12 @@ class App extends Component {
     }
   }
 
+  /* global BigInt */
   bid = async (_id, _price) => {
     const { accounts, contract } = this.state
 
     try {
-      await contract.methods.bid(_id, _price).send({ from: accounts[0], value: 100000000000000000 })
+      await contract.methods.bid(_id, BigInt(_price)).send({ from: accounts[0], value: 5000000000000000000 })
       .on('transactionHash', (hash) => this.setState({isLoading: true}))
       .on('confirmation', (reciept) => {
         window.location.href = "/my-opened-trades"
@@ -291,6 +292,10 @@ class App extends Component {
       );
     }
 
+    if (this.state.isAdmin && window.location.pathname === '/') {
+      window.location.href = '/conflicts'
+    }
+
     return (
       <BrowserRouter>
         <Routes>
@@ -298,8 +303,8 @@ class App extends Component {
             this.state.isAdmin 
               ?
                 <Route path="/" element={<Layout isAdmin={true} logout={this.logout} />}>
-                  <Route exact path="/" element={<Navigate to="/admin" />} /> 
-                  <Route path="/admin" element={<Conflicts conflicts={this.state.conflicts} adminResolveConflict={this.adminResolveConflict} />} />
+                  {/* <Route exact path="/" element={<Navigate to="/conflicts" />} /> */}
+                  <Route path="/conflicts" element={<Conflicts conflicts={this.state.conflicts} adminResolveConflict={this.adminResolveConflict} />} />
                   <Route path="closed-trades" element={<ClosedTrades></ClosedTrades>} />
                   <Route path="/my-opened-trades" element={<Unauthorized />} />
                   <Route path="*" element={<NoPage />} />
@@ -309,7 +314,7 @@ class App extends Component {
                   <Route index element={<Home myAddress={this.state.accounts[0]} runningTrades={this.state.runningTrades} submitBid={this.bid} submitCreateTrade={this.createTrade} />} />
                   <Route path="my-opened-trades" element={<MyOpenedTrades myAddress={this.state.accounts[0]} myOpenedTrades={this.state.myOpenedTrades} isAdmin={this.state.isAdmin} actionsOnOpenedTrades={[this.cancelTrade, this.endBidding, this.withdrawBid, this.buyerMarkFailedTrade, this.buyerConfirmSuccessfulTrade, this.sellerClaimMoney, this.buyerClaimMoneyBack, this.sellerConfirmFailedTrade, this.sellerMarkConflict, this.adminResolveConflict]} />} />
                   <Route path="closed-trades" element={<ClosedTrades></ClosedTrades>} />
-                  <Route path="/admin" element={<Unauthorized />} />
+                  <Route path="/conflicts" element={<Unauthorized />} />
                   <Route path="*" element={<NoPage />} />
                 </Route>
 

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 // Connect to the mongodb
-mongoose.connect('mongodb://localhost/fyp_energy_trading_web2').then(() => {
+mongoose.connect('mongodb://localhost/FYP_ENERGY_TRADING_WEB2').then(() => {
     const ClosedTrade = mongoose.model('ClosedTrade', new mongoose.Schema({}, { strict: false }), 'closed_trades')
 
     const express = require('express')
@@ -15,6 +15,6 @@ mongoose.connect('mongodb://localhost/fyp_energy_trading_web2').then(() => {
     })
     
     app.listen(port, () => {
-      console.log(`Example app listening on port ${port}`)
+      console.log(`Web 2.0 server running on port ${port}`)
     })
 })

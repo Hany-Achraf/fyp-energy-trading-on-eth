@@ -43,14 +43,14 @@ const Conflicts = ({ conflicts, adminResolveConflict }) => {
                   <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
                   <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
                   <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
-                  <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
-                  <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
+                  <b>Selling Price:</b> {trade["sellingPrice"]} Wei <br/>
+                  <b>Seller:</b> {trade["seller"]}<br/>
                 </div>
               </div>
               <div className='col-6 my-auto text-center'>
                 <div className='row'>
                   <div className='col-7'>
-                    <h5 className='lead text-muted'>CONFLICT</h5>
+                    <h5 className='text-muted'>CONFLICT</h5>
                   </div>
                   <div className='col-5 text-center'>
                     <Button variant="warning" onClick={() => handleResolveConflict(parseInt(trade["id"]))}>Resolve Conflict</Button>

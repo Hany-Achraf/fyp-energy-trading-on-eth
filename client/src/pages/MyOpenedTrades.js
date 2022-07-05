@@ -1,3 +1,4 @@
+import { floor } from 'lodash';
 import React, { useEffect } from 'react'
 import Button from 'react-bootstrap/Button';
 
@@ -78,7 +79,7 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
                 <Button className="mb-2" variant="danger" onClick={(e) => {handleSellerConfirmFailure(e)}}>Confirm Failure</Button>
                 <Button variant="warning" onClick={(e) => {handleSellerMarkConflict(e)}}>Mark Conflict</Button>
               </>
-            : false // (Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000) < 1 
+            : (Date.now() - new Date(parseInt(trade["markedFailedAt"]) * 1000)) / (60 * 1000) < 3 
               ?
                 <span className="d-inline-block" tabindex="0" data-toggle="tooltip" title="">
                   <Button variant="secondary" style={{"pointer-events": "none"}} disabled>Claim Money Back</Button>
@@ -102,7 +103,15 @@ const tradeStatusDepenableComponent = (trade, myAddress, isAdmin, actionsOnOpene
             myAddress.toUpperCase() === trade["buyer"].toUpperCase() 
             ?
               <>
-                <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
+                { 
+                  (Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000) < parseInt(trade["numOfMins"]) 
+                  ?
+                    <span className="mx-lg-2 mb-lg-0 mb-2" tabindex="0" data-toggle="tooltip" title="">
+                      <Button variant="danger" style={{"pointer-events": "none"}} disabled>Failed</Button>
+                    </span>
+                  :  
+                  <Button className="mx-lg-2 mb-lg-0 mb-2" variant="danger" onClick={(e) => {hadnleBuyerMarkFailed(e)}}>Failed</Button>
+                }
                 <Button variant="primary" onClick={(e) => {handleBuyerMarkSuccessful(e)}}>Successful</Button>
               </>
             : (Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000) < parseInt(trade["numOfMins"])
@@ -179,12 +188,16 @@ const MyOpenedTrades = ({ myOpenedTrades, myAddress, isAdmin, actionsOnOpenedTra
                   <b>Buyer/Trade Creator:</b> {trade["buyer"]}<br/>
                   <b>Amount Needed:</b> {trade["amountEnergyNeeded"]} Watt <br/>
                   <b>Number of Minutes:</b> {trade["numOfMins"]} Min <br/>
-                  <b>Best bid/Price (so far):</b> {trade["sellingPrice"]} Wei <br/>
-                  <b>Seller/Best Bid Provider (so far):</b> {trade["seller"]}<br/>
-                  <b>Bid placed before:</b> {((Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000)).toString()} Mins<br/>
+                  <b>Best bid/Price:</b> {trade["sellingPrice"]} Wei <br/>
+                  <b>Seller/Best Bid Provider:</b> {trade["seller"]}<br/>
                   {
-                    trade["status"] !== Status.RUNNING &&
-                      <><b>Bidding Ended before:</b> {((Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000)).toString()} Mins<br/></>
+                    trade["status"] == Status.RUNNING 
+                    ?
+                      <><b>Bid placed before:</b> { trade["bidAt"] === "0" ? "0" : floor(((Date.now() - new Date(parseInt(trade["bidAt"]) * 1000)) / (60 * 1000))).toString()} Mins<br/></>
+                    : trade["status"] == Status.PENDING_BUYER_CONFIRMATION 
+                      ? <><b>Bidding Ended before:</b> {floor(((Date.now() - new Date(parseInt(trade["biddingEndedAt"]) * 1000)) / (60 * 1000))).toString()} Mins<br/></>
+                      : trade["status"] == Status.PENDING_SELLER_CONFIRMATION && 
+                        <><b>Marked Failed before:</b> {floor(((Date.now() - new Date(parseInt(trade["markedFailedAt"]) * 1000)) / (60 * 1000))).toString()} Mins<br/></>
                   }
                 </div>
               </div>

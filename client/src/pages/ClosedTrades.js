@@ -10,17 +10,20 @@ const ClosedTrades = () => {
 
     useEffect(() => {
         const func = async () => {
-            const res = await fetch('http://172.21.159.35:5000/')
+            const res = await fetch('http://localhost:5000/')
             res.json().then((result) => {
                 const fetchedTrades = []
                 result.forEach(item => {
                     fetchedTrades.push({
                         tradeId: item['tradeId'],
                         buyer: item['buyer'],
-                        seller: item['seller'],
+                        seller: item['seller'] ? item['seller'] : 'N/A',
                         amountEnergyNeeded: item['amountEnergyNeeded'],
                         numOfMins: item['numOfMins'],
-                        sellingPrice: item['sellingPrice'],
+                        sellingPrice: item['sellingPrice'] ? item['sellingPrice'] : 'N/A',
+                        bidAt: item['bidAt'] ? item['bidAt'] : 'N/A',
+                        biddingEndedAt: item['biddingEndedAt'] ? item['biddingEndedAt'] : 'N/A',
+                        markedFailedAt: item['markedFailedAt'] ? item['markedFailedAt'] : 'N/A',
                         status: item['status'],
                     })
                 })
@@ -55,7 +58,7 @@ const ClosedTrades = () => {
     }
 
     return (
-        <div className='container bg-white my-4 pt-2 table-responsive'>
+        <div className='container-fluied bg-white m-4 pt-2 px-2 table-responsive'>
             <table class="table table-striped table-bordered text-nowrap">
                 <thead>
                     <tr>
@@ -65,6 +68,9 @@ const ClosedTrades = () => {
                         <th scope="col">Amount of Energy (Watt)</th>
                         <th scope="col">Number of Minutes</th>
                         <th scope="col">Selling Price (Wei)</th>
+                        <th scope='col'>Bidded At</th>
+                        <th scope='col'>Bidding Ended At</th>
+                        <th scope='col'>Marked FailedAt</th>
                         <th scope="col">Status</th>
 
                     </tr>
@@ -80,12 +86,18 @@ const ClosedTrades = () => {
                                     <td>{trade["amountEnergyNeeded"]}</td>
                                     <td>{trade["numOfMins"]}</td>
                                     <td>{trade["sellingPrice"]}</td>
+                                    <td>{trade["bidAt"]}</td>
+                                    <td>{trade["biddingEndedAt"]}</td>
+                                    <td>{trade["markedFailedAt"]}</td>
                                     <td className={
                                             trade["status"] === "SUCCESSFUL"
                                                 ?
                                                     "font-weight-bold text-success"
                                                 :
-                                                    "font-weight-bold text-warning"
+                                                trade["status"] === "FAILED"
+                                                    ? 
+                                                        "font-weight-bold text-danger"
+                                                    :   "font-weight-bold text-warning"
                                         }
                                     >
                                         {trade["status"]}

@@ -8,7 +8,7 @@ const CustomNavbar = ({ isAdmin, logout }) => {
 
     useEffect(() => {
       setActive(window.location.pathname)
-    }, [active])
+    }, [])
     
     const navigate = useNavigate()
 
@@ -32,7 +32,7 @@ const CustomNavbar = ({ isAdmin, logout }) => {
               isAdmin 
                 ?
                   <NavItem>
-                    <Nav.Link as={Link} to="/" eventKey="/" >Conflicts</Nav.Link>
+                    <Nav.Link as={Link} to="/conflicts" eventKey="/conflicts" >Conflicts</Nav.Link>
                   </NavItem>
                 :
                   <>
